@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Link Celo Wallet </title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-green-200 via-green-100 to-white min-h-screen flex items-center justify-center">
+  <div class="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold text-green-600 mb-6">Link your Celo Wallet</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      <div class="mb-4">
+        {% for category, message in messages %}
+          <div class="text-sm px-4 py-2 rounded text-white {{ 'bg-red-500' if category == 'danger' else 'bg-green-500' }}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endwith %}
+    <button id="connectBtn" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded-lg transition duration-300">
+      Connect Wallet
+    </button>
+
+    <div id="status" class="mt-6 text-sm text-gray-700"></div>
+    <div id="signatureBox" class="mt-4 text-xs text-gray-600 break-words"></div>
+  </div>
+
+  <script>
+    const connectBtn = document.getElementById("connectBtn");
+    const status = document.getElementById("status");
+    const signatureBox = document.getElementById("signatureBox");
+
+    const messageToSign = "Login to Celo Protected App";
+
+    connectBtn.addEventListener("click", async () => {
+      if (!window.ethereum) {
+        alert("No wallet found. Please install MetaMask or Valora.");
+        return;
+      }
+
+      try {
+        // Request wallet connection
+        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const address = accounts[0];
+        status.innerHTML = `<strong>Wallet connected:</strong> ${address}`;
+
+        // Request message signature
+        const from = address;
+        const msg = messageToSign;
+        const sign = await ethereum.request({
+          method: "personal_sign",
+          params: [msg, from],
+        });
+
+        signatureBox.innerHTML = `
+          <p><strong>Signed message:</strong></p>
+          <p>${sign}</p>
+        `;
+
+        // Send signed message to Flask backend for verification
+        const response = await fetch("http://127.0.0.1:5000/api/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            address: from,
+            signature: sign,
+            message: messageToSign
+          })
+        });
+
+        const result = await response.json();
+        alert(result.message);
+
+      } catch (error) {
+        console.error("Connection failed:", error);
+        status.innerHTML = `<span class="text-red-500">Connection or signing failed.</span>`;
+      }
+    });
+  </script>
+</body>
+</html>

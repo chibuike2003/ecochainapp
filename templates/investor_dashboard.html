@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECOCHAIN Investor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-emerald-100 text-gray-800 min-h-screen flex flex-col">
+
+    <header class="bg-white shadow-sm py-4 px-6 md:px-12 flex justify-between items-center rounded-b-xl">
+        <div class="flex items-center space-x-2">
+            <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586L4 11.414V9.586A1.994 1.994 0 014.586 8H7m0 0V5a2 2 0 012-2h2a2 2 0 012 2v3m-2 0h-2"></path>
+            </svg>
+            <span class="text-2xl font-bold text-green-700">ECOCHAIN</span>
+        </div>
+
+        <nav class="hidden md:flex space-x-6">
+            <a href="{{ url_for('investor_dashboard') }}" class="text-gray-600 hover:text-green-600 font-medium transition duration-300">Dashboard</a>
+            <a href="#" class="text-gray-600 hover:text-green-600 font-medium transition duration-300">Investments</a>
+            <a href="#" class="text-gray-600 hover:text-green-600 font-medium transition duration-300">Reports</a>
+            <a href="{{ url_for('report_issue') }}" class="text-gray-600 hover:text-green-600 font-medium transition duration-300">Help</a>
+            <a href="{{ url_for('contact') }}" class="text-gray-600 hover:text-green-600 font-medium transition duration-300">Contact</a>
+        </nav>
+
+        <div class="flex items-center space-x-4">
+            <span class="text-gray-700 font-medium hidden sm:block">Welcome, {{ user.full_name if user else 'Investor' }}!</span>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500">
+                <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <a href="{{ url_for('logout') }}" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300">
+                Logout
+            </a>
+        </div>
+    </header>
+
+    <nav id="mobile-menu" class="hidden md:hidden bg-white shadow-md py-4 px-6 rounded-b-xl">
+        <ul class="flex flex-col space-y-3">
+            <li><a href="{{ url_for('investor_dashboard') }}" class="block text-gray-700 hover:text-green-600 font-medium py-2">Dashboard</a></li>
+            <li><a href="#" class="block text-gray-700 hover:text-green-600 font-medium py-2">Investments</a></li>
+            <li><a href="#" class="block text-gray-700 hover:text-green-600 font-medium py-2">Reports</a></li>
+            <li><a href="{{ url_for('report_issue') }}" class="block text-gray-700 hover:text-green-600 font-medium py-2">Help</a></li>
+            <li><a href="{{ url_for('contact') }}" class="block text-gray-700 hover:text-green-600 font-medium py-2">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main class="flex-grow container mx-auto px-4 py-8 md:py-12">
+        <div class="bg-white p-6 md:p-10 rounded-xl shadow-lg">
+            <h1 class="text-3xl md:text-4xl font-bold text-green-800 mb-8 text-center">Investor Dashboard</h1>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-1 bg-green-50 p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                    <div class="w-24 h-24 bg-green-200 rounded-full flex items-center justify-center mb-4">
+                        <svg class="h-16 w-16 text-green-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-2xl font-semibold text-green-700 mb-2">{{ user.full_name if user else 'N/A' }}</h2>
+                    <p class="text-gray-600 text-sm break-all">Email: {{ user.email if user else 'N/A' }}</p>
+                    <p class="text-gray-600 text-sm break-all">Wallet: {{ user.wallet_address if user else 'Not Linked' }}</p>
+                    <a href="{{ url_for('wallet') }}" class="mt-4 text-sm text-green-600 hover:underline">
+                        {{ 'Link Wallet' if not user.wallet_address else 'Update Wallet' }}
+                    </a>
+                </div>
+
+                <div class="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                        <svg class="h-12 w-12 text-blue-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.592 1L21 12l-4.408 3.592c-.512.598-1.482 1-2.592 1-1.657 0-3-.895-3-2s1.343-2 3-2 3-.895 3-2-1.343-2-3-2z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-blue-700 mb-2">Total Investment</h3>
+                        <p class="text-4xl font-bold text-blue-800">$15,000</p>
+                        <p class="text-gray-600 mt-2">Across all ECOCHAIN projects.</p>
+                    </div>
+
+                    <div class="bg-purple-50 p-6 rounded-lg shadow-md flex flex-col items-center text-center">
+                        <svg class="h-12 w-12 text-purple-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h3 class="text-xl font-semibold text-purple-700 mb-2">Trees Funded</h3>
+                        <p class="text-4xl font-bold text-purple-800">5,000</p>
+                        <p class="text-gray-600 mt-2">Your direct contribution to afforestation.</p>
+                    </div>
+
+                    <div class="md:col-span-2 bg-yellow-50 p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold text-yellow-700 mb-4">Latest Project Updates</h3>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>Project "Green Horizon" - 80% complete</span>
+                                <span class="text-sm text-gray-500">3 days ago</span>
+                            </li>
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>New report available for "Forest Revival"</span>
+                                <span class="text-sm text-gray-500">1 week ago</span>
+                            </li>
+                            <li class="flex justify-between items-center text-gray-700">
+                                <span>Dividend distribution for Q1 2025</span>
+                                <span class="text-sm text-gray-500">2 weeks ago</span>
+                            </li>
+                        </ul>
+                        <button class="mt-6 w-full bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-full shadow-md transition duration-300">
+                            View All Projects
+                        </button>
+                    </div>
+
+                    <div class="md:col-span-2 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4 mt-6">
+                        <a href="#" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                            Explore New Projects
+                        </a>
+                        <a href="#" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 text-center">
+                            View Investment Portfolio
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-6 px-6 md:px-12 text-center rounded-t-xl mt-8">
+        <div class="max-w-6xl mx-auto">
+            <p>&copy; 2025 ECOCHAIN. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript for mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+</html>
